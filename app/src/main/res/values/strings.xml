@@ -1,0 +1,72 @@
+<resources>
+    <string name="app_name">그거 어딨지?</string>
+    <string name="app_comment">그 물건을 찾아봅시다.</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="openDrawer">open_drawer</string>
+    <string name="closeDrawer">close_drawer</string>
+
+    <!-- Navigation Drawer menu labels -->
+    <string name="nav_home">Home</string>
+    <string name="nav_add_location">위치 추가</string>
+    <string name="nav_list_location">위치 목록</string>
+    <string name="nav_list_stuff">물건 목록</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="nav_settings">설정</string>
+    <string name="nav_add_stuff">물건 추가</string>
+    <string name="nav_choice_loc">위치를 선택하세요.</string>
+    <string name="nav_about_us">About Us</string>
+    <string name="nav_privacy_policy">Privacy Policy</string>
+
+
+    <!-- Layout내의 TEXT -->
+    <string name="subtitle_loc_name">위치명</string>
+    <string name="subtitle_loc_comment">위치 설명</string>
+    <string name="subtitle_loc_choice">물건 놓을 위치</string>
+    <string name="subtitle_stu_name">물건명</string>
+    <string name="subtitle_stu_comment">물건 설명</string>
+
+    <string name="hint_loc_name">위치명을 적어주세요. (20자이내)</string>
+    <string name="hint_loc_comment">위치 설명을 적어주세요. (50자 이내)</string>
+    <string name="hint_stu_name">물건명을 적어주세요. (20자이내)</string>
+    <string name="hint_stu_comment">물건 설명을 적어주세요. (50자 이내)</string>
+
+    <string name="info_no_data">아직 데이터가 없습니다.\n 데이터를 추가해주세요.</string>
+
+    <!-- Layout내의 BUTTON -->
+    <string name="btn_insert">추가하기</string>
+    <string name="btn_choice_loc">위치선택</string>
+    <string name="btn_upload_img">사진올리기</string>
+
+    <!-- Menu -->
+    <string name="menu_updateData">수정하기</string>
+    <string name="menu_deleteData">삭제하기</string>
+
+    <!-- Dialog -->
+    <string name="d_title_photo">사진 올리기</string>
+    <string name="d_open_gallery">앨범에서 사진 가져오기</string>
+    <string name="d_open_camera">사진찍기</string>
+    <string name="d_coming_soon">준비중입니다.</string>
+
+
+    <!-- Toolbar titles when navigation menu item is selected -->
+    <string-array name="nav_item_activity_titles">
+        <item>@string/nav_list_location</item>
+        <item>@string/nav_add_location</item>
+        <item>@string/nav_add_stuff</item>
+        <item>@string/nav_notifications</item>
+        <item>@string/nav_settings</item>
+    </string-array>
+
+    <string name="activity_add_location">Add Location</string>
+    <string name="activity_detail_location">Detail Location</string>
+    <string name="activity_detail_stuff">Detail Stuff</string>
+    <string name="activity_add_stuff">Add Stuff</string>
+    <string name="activity_choice_location">Choice Location</string>
+    <string name="activity_title_about_us">About Us</string>
+    <string name="activity_title_privacy_policy">Privacy Policy</string>
+    <string name="action_clear_all">Clear All</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_mark_all_read">Mark All as Read</string>
+</resources>
