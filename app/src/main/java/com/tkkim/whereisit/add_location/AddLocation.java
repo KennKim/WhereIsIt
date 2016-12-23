@@ -77,7 +77,7 @@ public class AddLocation extends AppCompatActivity {
                                 openGallery();
                                 return;
                             case 1:
-                                Toast.makeText(getApplicationContext(), getString(R.string.d_coming_soon) + ListString[item], Toast.LENGTH_SHORT).show();
+                                openCamera();
                                 return;
                         }
                     }
