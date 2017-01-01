@@ -3,9 +3,7 @@ package com.tkkim.whereisit.list_location;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +20,7 @@ import java.util.ArrayList;
  * Created by conscious on 2016-12-23.
  */
 
-class ListLocAdapter extends RecyclerView.Adapter<ListLocAdapter.MyViewHolder> {
+class ListLocAdapter2 extends RecyclerView.Adapter<ListLocAdapter2.MyViewHolder> {
 
     private Context context;
     private final ArrayList<MyLocation> items;
@@ -32,11 +30,11 @@ class ListLocAdapter extends RecyclerView.Adapter<ListLocAdapter.MyViewHolder> {
     private int last, total;
     private Boolean mLoad;
 
-    public ListLocAdapter(ArrayList<MyLocation> items, Context context, RecyclerView recyclerView) {
+    public ListLocAdapter2(ArrayList<MyLocation> items, Context context, RecyclerView recyclerView) {
         this.items = items;
         this.context = context;
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -54,10 +52,10 @@ class ListLocAdapter extends RecyclerView.Adapter<ListLocAdapter.MyViewHolder> {
 
                 }
             }
-        });
+        });*/
     }
 
-    public void setOnLoadMoreListener(ListLocAdapter.OnLoadMoreListener onLoadMoreListener) {
+    public void setOnLoadMoreListener(ListLocAdapter2.OnLoadMoreListener onLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener;
     }
 
