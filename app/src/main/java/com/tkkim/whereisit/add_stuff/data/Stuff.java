@@ -1,10 +1,11 @@
 package com.tkkim.whereisit.add_stuff.data;
 
-/**
- * Created by conscious on 2016-12-04.
- */
+import java.io.Serializable;
 
-public class Stuff {
+
+public class Stuff implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int stu_no;
     private String loc_no;

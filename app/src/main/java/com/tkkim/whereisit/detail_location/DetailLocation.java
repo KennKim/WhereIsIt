@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import com.tkkim.whereisit.R;
 import com.tkkim.whereisit.add_location.AddLocation;
-import com.tkkim.whereisit.add_location.data.MyLocation;
 import com.tkkim.whereisit.add_stuff.AddStuff;
 import com.tkkim.whereisit.add_stuff.data.Stuff;
 import com.tkkim.whereisit.detail_stuff.DetailStuff;
@@ -47,7 +46,8 @@ public class DetailLocation extends AppCompatActivity {
     private ImageView ivBackground;
     private TextView tvNoData;
     private FloatingActionButton fabDetailLoc;
-    private ArrayList<Stuff> items;
+    private ArrayList<Stuff> stuItems;
+//    private ArrayList<MyLocation> locItems;
 
     public static final String PUT_LOC_NO = "locNo";
     public static final String PUT_LOC_NAME = "locName";
@@ -86,12 +86,12 @@ public class DetailLocation extends AppCompatActivity {
         if (dbHelper == null) {
             dbHelper = new DBHelper(this, dbHelper.DB_NAME, null, 1);
         }
-        items = dbHelper.getStuList(locNo);
+        stuItems = dbHelper.getStuList(locNo);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new MyAdapter(items));
+        recyclerView.setAdapter(new MyAdapter(stuItems));
 
         tvNoData = (TextView) findViewById(R.id.tvNoData);
-        if (!items.isEmpty()) {
+        if (!stuItems.isEmpty()) {
             tvNoData.setVisibility(View.GONE);
         }
 
@@ -108,8 +108,8 @@ public class DetailLocation extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ArrayList<MyLocation> items = getLocItem(locNo);
-        getSupportActionBar().setTitle(items.get(0).getLoc_name());
+//        ArrayList<MyLocation> items = getLocItem(locNo);
+        getSupportActionBar().setTitle(locName);
     }
 
     @Override
@@ -182,21 +182,21 @@ public class DetailLocation extends AppCompatActivity {
         dialog.show();
     }
 
-    private ArrayList<MyLocation> getLocItem(String locNo) {
-        if (dbHelper == null) {
-            dbHelper = new DBHelper(this, dbHelper.DB_NAME, null, 1);
-        }
-        ArrayList<MyLocation> items = dbHelper.getLocItem(locNo);
-        return items;
-    }
+//    private ArrayList<MyLocation> getLocItem(String locNo) {
+//        if (dbHelper == null) {
+//            dbHelper = new DBHelper(this, dbHelper.DB_NAME, null, 1);
+//        }
+//        locItems = dbHelper.getLocItem(locNo);
+//        return locItems;
+//    }
 
 
     private class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
-        private final ArrayList<Stuff> items;
+        private final ArrayList<Stuff> stuItems;
 
         public MyAdapter(ArrayList<Stuff> items) {
-            this.items = items;
+            this.stuItems = items;
         }
 
         @Override
@@ -208,24 +208,25 @@ public class DetailLocation extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final MyViewHolder viewHolder, int position) {
 
-            if (items.get(position).getStu_imgpath() != null) {
-                String imgPath = items.get(position).getStu_imgpath();
+            if (stuItems.get(position).getStu_imgpath() != null) {
+                String imgPath = stuItems.get(position).getStu_imgpath();
                 viewHolder.ivStuImg.setImageURI(Uri.fromFile(new File(imgPath)));
             }
 
-            viewHolder.tvStuName.setText(items.get(position).getStu_name());
-            viewHolder.tvStuComment.setText(items.get(position).getStu_comment());
-            viewHolder.tvStuDate.setText(items.get(position).getStu_date());
+            viewHolder.tvStuName.setText(stuItems.get(position).getStu_name());
+            viewHolder.tvStuComment.setText(stuItems.get(position).getStu_comment());
+            viewHolder.tvStuDate.setText(stuItems.get(position).getStu_date());
             viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 //                    Toast.makeText(getApplicationContext(), "carView " + viewHolder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(DetailLocation.this, DetailStuff.class);
-                    intent.putExtra(DetailStuff.PUT_STU_NO,items.get(viewHolder.getAdapterPosition()).getStu_no());
-                    intent.putExtra(DetailStuff.PUT_STU_NAME,items.get(viewHolder.getAdapterPosition()).getStu_name());
-                    intent.putExtra(DetailStuff.PUT_STU_COMMENT,items.get(viewHolder.getAdapterPosition()).getStu_comment());
-                    intent.putExtra(DetailStuff.PUT_STU_DATE,items.get(viewHolder.getAdapterPosition()).getStu_date());
-                    intent.putExtra(DetailStuff.PUT_STU_IMGPATH,items.get(viewHolder.getAdapterPosition()).getStu_imgpath());
+                    intent.putExtra(DetailStuff.PUT_STU_NO, stuItems.get(viewHolder.getAdapterPosition()).getStu_no());
+                    intent.putExtra(DetailStuff.PUT_STU_NAME, stuItems.get(viewHolder.getAdapterPosition()).getStu_name());
+                    intent.putExtra(DetailStuff.PUT_STU_COMMENT, stuItems.get(viewHolder.getAdapterPosition()).getStu_comment());
+                    intent.putExtra(DetailStuff.PUT_STU_DATE, stuItems.get(viewHolder.getAdapterPosition()).getStu_date());
+                    intent.putExtra(DetailStuff.PUT_STU_IMGPATH, stuItems.get(viewHolder.getAdapterPosition()).getStu_imgpath());
+                    intent.putExtra(PUT_LOC_NO, locNo);
                     startActivity(intent);
                     overridePendingTransition(android.R.anim.slide_out_right, android.R.anim.slide_in_left);
 
@@ -235,7 +236,7 @@ public class DetailLocation extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return items.size();
+            return stuItems.size();
         }
     }
 

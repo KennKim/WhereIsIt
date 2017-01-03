@@ -198,7 +198,7 @@ public class ListLocationFragment extends Fragment{
         startActivityForResult(intent, 0);
 
 //        Bundle b = new Bundle();
-//        b.putString(DetailLocation.PUT_LOC_NO, items.get(position).getLoc_no()+"");
+//        b.putString(DetailLocation.PUT_ARR_LOC_NO, items.get(position).getLoc_no()+"");
 //        b.putString(DetailLocation.PUT_LOC_NAME, items.get(position).getLoc_name());
 
 //        Fragment fragment = new DetailLocation();

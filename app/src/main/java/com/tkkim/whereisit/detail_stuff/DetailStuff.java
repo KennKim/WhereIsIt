@@ -1,10 +1,12 @@
 package com.tkkim.whereisit.detail_stuff;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,14 +15,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tkkim.whereisit.R;
+import com.tkkim.whereisit.detail_location.DetailLocation;
+import com.tkkim.whereisit.z_etc.DBHelper;
 
 import java.io.File;
 
-/**
- * Created by conscious on 2016-12-10.
- */
 
 public class DetailStuff extends AppCompatActivity {
+
+    private DBHelper dbHelper;
 
     private ImageView ivStuImg;
     private TextView tvStuName;
@@ -33,6 +36,7 @@ public class DetailStuff extends AppCompatActivity {
     public static final String PUT_STU_DATE = "stuDate";
     public static final String PUT_STU_IMGPATH = "stuImgpath";
 
+    private String locNo;
     private String stuNo;
     private String stuName;
     private String stuComment;
@@ -43,6 +47,7 @@ public class DetailStuff extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        locNo=getIntent().getStringExtra(DetailLocation.PUT_LOC_NO);
         stuNo=getIntent().getStringExtra(PUT_STU_NO);
         stuName=getIntent().getStringExtra(PUT_STU_NAME);
         stuComment=getIntent().getStringExtra(PUT_STU_COMMENT);
@@ -99,6 +104,31 @@ public class DetailStuff extends AppCompatActivity {
         tvStuDate.setText(stuDate);
     }
     private void deleteData() {
+        AlertDialog.Builder ab = new AlertDialog.Builder(this);
+        ab.setTitle("삭제하기");
+        ab.setMessage("'"+stuName + "'을 \n삭제 할까요?");
+        ab.setIcon(getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
+        ab.setCancelable(false);
+        ab.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+
+                if (dbHelper == null) {
+                    dbHelper = new DBHelper(getApplicationContext(), dbHelper.DB_NAME, null, 1);
+                }
+                dbHelper.deleteStuff(stuNo,locNo);
+                finish();
+            }
+        });
+
+        ab.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                arg0.dismiss();
+            }
+        });
+        AlertDialog dialog = ab.create();
+        dialog.show();
         infoSnackbar();
     }
 

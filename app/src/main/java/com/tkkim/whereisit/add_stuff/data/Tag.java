@@ -1,10 +1,12 @@
 package com.tkkim.whereisit.add_stuff.data;
 
-/**
- * Created by conscious on 2016-12-04.
- */
+import java.io.Serializable;
 
-public class Tag {
+
+public class Tag implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private int tag_no;
     private String stu_no;
 

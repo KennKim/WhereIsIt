@@ -19,11 +19,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tkkim.whereisit.R;
+import com.tkkim.whereisit.add_location.data.MyLocation;
 import com.tkkim.whereisit.add_stuff.data.Stuff;
 import com.tkkim.whereisit.z_etc.DBHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class AddStuff extends AppCompatActivity {
@@ -41,17 +43,21 @@ public class AddStuff extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_TAKE_PHOTO = 2;
     private static final int REQUEST_IMAGE_CROP = 3;
-
     public static final int REQUEST_ACT = 4;
 
     private Uri photoURI, albumURI = null;
     private Boolean album = false;
-    private String imgFilePath="";
+    private String imgFilePath = "";
 
-    public static final String PUT_LOC_NO = "locNo";
+    private ArrayList<MyLocation> items;
+    private ArrayList<MyLocation> arrLocNo;
+    public Boolean boolChoiced = false;
+    public static final String PUT_ITEM = "locItem";
+    public static final String PUT_ARR_LOC_NO = "locNo";
+    public static final String PUT_CHOICED = "choiced";
     public static final String PUT_LOC_NAME = "locName";
-    private String locNo="";
-    private String locName="";
+    private String locNo = "";
+    private String locName = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +90,8 @@ public class AddStuff extends AppCompatActivity {
                     }
                 });
                 AlertDialog dialog = ab.create();
-                dialog.show();            }
+                dialog.show();
+            }
         });
 
         tvSelectedLoc = (TextView) findViewById(R.id.tvSelectedLoc);
@@ -94,6 +101,11 @@ public class AddStuff extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), ChoiceLocation.class);
+                if (items != null) {
+                    intent.putExtra(PUT_ITEM, items);
+                    intent.putExtra(PUT_ARR_LOC_NO, arrLocNo);
+                    intent.putExtra(PUT_CHOICED, boolChoiced);
+                }
                 startActivityForResult(intent, REQUEST_ACT);
             }
         });
@@ -103,16 +115,54 @@ public class AddStuff extends AppCompatActivity {
         btnInsert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addStuff();
+
+                String locName = tvSelectedLoc.getText().toString();
+                String stuName = etStuName.getText().toString();
+                String stuComment = etStuComment.getText().toString();
+
+                if (locName.length() == 0 || locName == " ") {
+                    Toast.makeText(getApplicationContext(), "위치를 선택해주세요.", Toast.LENGTH_SHORT).show();
+                } else if (stuName.length() == 0 || stuName == " " ) {
+                    Toast.makeText(getApplicationContext(), "물건명을 적어주세요.", Toast.LENGTH_SHORT).show();
+                } else if (stuComment.length() == 0 || stuComment == " " ) {
+                    Toast.makeText(getApplicationContext(), "물건설명을 적어주세요.", Toast.LENGTH_SHORT).show();
+                } else if (imgFilePath.length() == 0 || imgFilePath == "" || imgFilePath == null) {
+                    Toast.makeText(getApplicationContext(), "사진을 올려주세요.", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder ab = new AlertDialog.Builder(AddStuff.this);
+                    ab.setTitle("사진 올리기");
+                    ab.setMessage("사진을 아직 안 올리셨네요.\n그대로 진행할까요?");
+                    ab.setIcon(getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
+                    ab.setCancelable(false);
+                    ab.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int arg1) {
+                            imgFilePath = null;
+                            addStuff();
+                        }
+                    });
+
+                    ab.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int arg1) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog dialog = ab.create();
+                    dialog.show();
+                } else {
+                    addStuff();
+                }
 
             }
         });
 
-        if(getIntent().getStringExtra(PUT_LOC_NO)!=null) {
-            locNo = getIntent().getStringExtra(PUT_LOC_NO);
+        getLocAll();
+
+        /*if (getIntent().getStringExtra(PUT_ARR_LOC_NO) != null) {
+            locNo = getIntent().getStringExtra(PUT_ARR_LOC_NO);
             locName = getIntent().getStringExtra(PUT_LOC_NAME);
             tvSelectedLoc.setText(locName);
-        }
+        }*/
     }
 
     @Override
@@ -137,7 +187,7 @@ public class AddStuff extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode != RESULT_OK) {
-            Log.d("===Intent===","onActivityResult : RESULT_NOT_OK");
+            Log.d("===Intent===", "onActivityResult : RESULT_NOT_OK");
         } else {
             switch (requestCode) {
                 case REQUEST_TAKE_PHOTO: // 앨범 이미지 가져오기
@@ -162,66 +212,60 @@ public class AddStuff extends AppCompatActivity {
                     break;
 
                 case REQUEST_ACT:
-                    locNo = data.getStringExtra(PUT_LOC_NO);
-                    locName = data.getStringExtra(PUT_LOC_NAME);
-                    tvSelectedLoc.setText(locName);
+//                    locNo = data.getStringExtra(PUT_ARR_LOC_NO);
+//                    locName = data.getStringExtra(PUT_LOC_NAME);
+
+                    arrLocNo = (ArrayList<MyLocation>) data.getSerializableExtra(PUT_ARR_LOC_NO);
+                    if (arrLocNo != null) {
+                        boolChoiced = true;
+
+                        tvSelectedLoc.setText(arrLocNo.get(0).getLoc_name());
+                        if (arrLocNo.size() > 1) {
+                            tvSelectedLoc.setText(arrLocNo.get(0).getLoc_name() + " + " + (arrLocNo.size() - 1));
+                        }
+                    }
+
+                    /*items = (ArrayList<MyLocation>)data.getSerializableExtra(PUT_ARR_LOC_NO);
+                    if (items != null) {
+                        boolChoiced = true;
+                            tvSelectedLoc.setText(items.get(0).getLoc_name());
+                        if (items.size() > 1){
+                            tvSelectedLoc.setText(items.get(0).getLoc_name() + " + " + (items.size()-1));
+                        }
+                    }*/
                     break;
             }
         }
     }
 
-    private void addStuff() {
-
-        String locName = tvSelectedLoc.getText().toString();
-        String stuName = etStuName.getText().toString();
-        String stuComment = etStuComment.getText().toString();
-
-        if (locName.length() == 0 || locName == " " || locName == null) {
-            Toast.makeText(getApplicationContext(), "위치를 선택해주세요.", Toast.LENGTH_SHORT).show();
-        } else if (stuName.length() == 0 || stuName == " " || stuName == null) {
-            Toast.makeText(getApplicationContext(), "물건명을 적어주세요.", Toast.LENGTH_SHORT).show();
-        } else if (stuComment.length() == 0 || stuComment == " " || stuComment == null) {
-            Toast.makeText(getApplicationContext(), "물건설명을 적어주세요.", Toast.LENGTH_SHORT).show();
-        } else if (imgFilePath.length() == 0 || imgFilePath == "" || imgFilePath == null) {
-            Toast.makeText(getApplicationContext(), "사진을 올려주세요.", Toast.LENGTH_SHORT).show();
-            AlertDialog.Builder ab = new AlertDialog.Builder(AddStuff.this);
-            ab.setTitle("사진 올리기");
-            ab.setMessage("사진을 아직 안 올리셨네요.\n그대로 진행할까요?");
-            ab.setIcon(getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
-            ab.setCancelable(false);
-            ab.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int arg1) {
-                    imgFilePath=null;
-                }
-            });
-
-            ab.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int arg1) {
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog dialog = ab.create();
-            dialog.show();
-        } else {
-            if (dbHelper == null) {
-                dbHelper = new DBHelper(this, dbHelper.DB_NAME, null, 1);
-            }
-            Stuff data = new Stuff();
-            data.setLoc_no(locNo);
-            data.setStu_name(etStuName.getText().toString());
-            data.setStu_comment(etStuComment.getText().toString());
-            data.setStu_imgpath(imgFilePath);
-            dbHelper.addStuff(data);
-
-            tvSelectedLoc.setText("");
-            etStuName.setText("");
-            etStuComment.setText("");
-            ivStuImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_android_black_24dp));
-            imgFilePath="";
+    private void getLocAll() {
+        if (dbHelper == null) {
+            dbHelper = new DBHelper(this, DBHelper.DB_NAME, null, 1);
         }
+        items = dbHelper.getLocAll();
     }
+
+    private void addStuff() {
+        if (dbHelper == null) {
+            dbHelper = new DBHelper(this, dbHelper.DB_NAME, null, 1);
+        }
+        Stuff data = new Stuff();
+        data.setStu_name(etStuName.getText().toString());
+        data.setStu_comment(etStuComment.getText().toString());
+        data.setStu_imgpath(imgFilePath);
+        dbHelper.addStuff(data, arrLocNo);
+
+        tvSelectedLoc.setText("");
+        etStuName.setText("");
+        etStuComment.setText("");
+//        ivStuImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_android_black_24dp));
+//        ivStuImg.setVisibility(View.VISIBLE);
+        imgFilePath = "";
+        ivStuImg.setVisibility(View.GONE);
+    }
+
+
+
     // 저장할 폴더 생성
     private File createImageFile() throws IOException {
         File fileDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaPhoto");
@@ -268,6 +312,7 @@ public class AddStuff extends AppCompatActivity {
             e.printStackTrace();
         }
         ivStuImg.setImageBitmap(bitmap);
+        ivStuImg.setVisibility(View.VISIBLE);
     }
 
 }

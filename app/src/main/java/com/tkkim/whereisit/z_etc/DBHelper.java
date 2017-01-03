@@ -15,9 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Created by conscious on 2016-12-02.
- */
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -25,30 +22,30 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "WhereIsIt";
 
-    public static final String TABLE_mylocation = "mylocation";
-    public static final String COL_loc_no = "loc_no";
-    public static final String COL_loc_name = "loc_name";
-    public static final String COL_loc_comment = "loc_comment";
-    public static final String COL_loc_imgpath = "loc_imgpath";
-    public static final String COL_loc_thumbpath = "loc_thumbpath";
-    public static final String COL_loc_date = "loc_date";
+    private static final String TABLE_mylocation = "mylocation";
+    private static final String COL_loc_no = "loc_no";
+    private static final String COL_loc_name = "loc_name";
+    private static final String COL_loc_comment = "loc_comment";
+    private static final String COL_loc_imgpath = "loc_imgpath";
+    private static final String COL_loc_thumbpath = "loc_thumbpath";
+    private static final String COL_loc_date = "loc_date";
     private static final String SQL_CREATE_TABLE_1 = "CREATE TABLE " + TABLE_mylocation + " (" + COL_loc_no + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COL_loc_name + " VARCHAR(22)," + COL_loc_comment + " VARCHAR(50)," + COL_loc_imgpath + " VARCHAR(50)," + COL_loc_thumbpath + " VARCHAR(50)," + COL_loc_date + " VARCHAR(22))";
 
-    public static final String TABLE_stuff = "stuff";
-    public static final String COL_stu_no = "stu_no";
-    public static final String COL_stu_name = "stu_name";
-    public static final String COL_stu_comment = "stu_comment";
-    public static final String COL_stu_imgpath = "stu_imgpath";
-    public static final String COL_stu_thumbpath = "stu_thumbpath";
-    public static final String COL_stu_date = "stu_date";
+    private static final String TABLE_stuff = "stuff";
+    private static final String COL_stu_no = "stu_no";
+    private static final String COL_stu_name = "stu_name";
+    private static final String COL_stu_comment = "stu_comment";
+    private static final String COL_stu_imgpath = "stu_imgpath";
+    private static final String COL_stu_thumbpath = "stu_thumbpath";
+    private static final String COL_stu_date = "stu_date";
     private static final String SQL_CREATE_TABLE_2 = "CREATE TABLE " + TABLE_stuff + " (" + COL_stu_no + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COL_loc_no + " INTEGER," + COL_stu_name + " VARCHAR(22)," + COL_stu_comment + " VARCHAR(50)," + COL_stu_imgpath + " VARCHAR(50)," + COL_stu_thumbpath + " VARCHAR(50)," + COL_stu_date + " VARCHAR(22))";
 
-    public static final String TABLE_tag = "tag";
-    public static final String COL_tag_no = "tag_no";
-    public static final String COL_tag_name = "tag_name";
+    private static final String TABLE_tag = "tag";
+    private static final String COL_tag_no = "tag_no";
+    private static final String COL_tag_name = "tag_name";
     private static final String SQL_CREATE_TABLE_3 = "CREATE TABLE " + TABLE_tag + " (" + COL_tag_no + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COL_stu_no + " INTEGER," + COL_tag_name + " VARCHAR(22))";
 
-    public static final String TABLE_loc = "loc";
+    private static final String TABLE_loc = "loc";
     private static final String SQL_CREATE_TABLE_4 = "CREATE TABLE " + TABLE_loc + " (" + COL_loc_no + " INTEGER, " + COL_stu_no + " INTEGER )";
 
 
@@ -98,7 +95,34 @@ public class DBHelper extends SQLiteOpenHelper {
         String sql = "SELECT * FROM " + TABLE_mylocation + " ORDER BY " + COL_loc_no + " DESC LIMIT " + start + ", 10";
 
         Cursor c = db.rawQuery(sql, null);
-        ArrayList<MyLocation> items = new ArrayList<MyLocation>();
+        ArrayList<MyLocation> items = new ArrayList<>();
+        try {
+            if (c.moveToFirst()) {
+                do {
+                    MyLocation myLocation = new MyLocation();
+                    myLocation.setLoc_no(c.getInt(c.getColumnIndex(COL_loc_no)));
+                    myLocation.setLoc_name(c.getString(c.getColumnIndex(COL_loc_name)));
+                    myLocation.setLoc_comment(c.getString(c.getColumnIndex(COL_loc_comment)));
+                    myLocation.setLoc_imgpath(c.getString(c.getColumnIndex(COL_loc_imgpath)));
+                    myLocation.setLoc_thumbpath(c.getString(c.getColumnIndex(COL_loc_thumbpath)));
+                    myLocation.setLoc_date(c.getString(c.getColumnIndex(COL_loc_date)));
+                    items.add(myLocation);
+                } while (c.moveToNext());
+            }
+        } catch (Exception e) {
+            c.close();
+        }
+        db.close();
+        return items;
+    }
+
+    public ArrayList<MyLocation> getLocAll() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String sql = "SELECT * FROM " + TABLE_mylocation + " ORDER BY " + COL_loc_no + " DESC";
+
+        Cursor c = db.rawQuery(sql, null);
+        ArrayList<MyLocation> items = new ArrayList<>();
         try {
             if (c.moveToFirst()) {
                 do {
@@ -126,7 +150,7 @@ public class DBHelper extends SQLiteOpenHelper {
 //        String sql = "SELECT * FROM " + TABLE_mylocation + " WHERE " + COL_loc_no + " = " + locNo;
         Cursor c = db.rawQuery(sql, null);
 
-        ArrayList<MyLocation> items = new ArrayList<MyLocation>();
+        ArrayList<MyLocation> items = new ArrayList<>();
         try {
             if (c.moveToFirst()) {
                 do {
@@ -147,20 +171,23 @@ public class DBHelper extends SQLiteOpenHelper {
         return items;
     }
 
-    public void addStuff(Stuff data) {
+    public void addStuff(Stuff data, ArrayList<MyLocation> arrLocNo) {
 
         SQLiteDatabase db = getWritableDatabase();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_loc_no, data.getLoc_no());
-        contentValues.put(COL_stu_name, data.getStu_name());
-        contentValues.put(COL_stu_comment, data.getStu_comment());
-        contentValues.put(COL_stu_imgpath, data.getStu_imgpath());
-        contentValues.put(COL_stu_date, dateFormat.format(date));
-        db.insert(TABLE_stuff, null, contentValues);
+        for (MyLocation m : arrLocNo) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(COL_loc_no, m.getLoc_no());
+            contentValues.put(COL_stu_name, data.getStu_name());
+            contentValues.put(COL_stu_comment, data.getStu_comment());
+            contentValues.put(COL_stu_imgpath, data.getStu_imgpath());
+            contentValues.put(COL_stu_date, dateFormat.format(date));
+            db.insert(TABLE_stuff, null, contentValues);
+        }
+
         db.close();
         Toast.makeText(context, "Stuff Insert 완료", Toast.LENGTH_SHORT).show();
     }
@@ -172,7 +199,7 @@ public class DBHelper extends SQLiteOpenHelper {
 //        String sql = "SELECT * FROM " + TABLE_stuff;
 //        String sql = "SELECT * FROM " + TABLE_mylocation + " WHERE " + COL_loc_no + " = " + locNo;
         Cursor c = db.rawQuery(sql, null);
-        ArrayList<Stuff> items = new ArrayList<Stuff>();
+        ArrayList<Stuff> items = new ArrayList<>();
 
         try {
 
@@ -223,13 +250,21 @@ public class DBHelper extends SQLiteOpenHelper {
         Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
     }
 
+    public void deleteStuff(String stuNo, String locNo) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("delete from " + TABLE_stuff + " WHERE " + COL_stu_no + " = " + stuNo + " AND " + COL_loc_no + " = " + locNo);
+        db.close();
+        Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
+    }
+
+
     public ArrayList<MyLocation> getSearch(String word, int start) {
         SQLiteDatabase db = getReadableDatabase();
 
         String sql = "SELECT * FROM " + TABLE_mylocation + " WHERE " + COL_loc_name + " LIKE '%" + word + "%'" + " DESC LIMIT " + start + ", 10";
 
         Cursor c = db.rawQuery(sql, null);
-        ArrayList<MyLocation> items = new ArrayList<MyLocation>();
+        ArrayList<MyLocation> items = new ArrayList<>();
         try {
             if (c.moveToFirst()) {
                 do {

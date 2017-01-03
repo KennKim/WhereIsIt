@@ -8,12 +8,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tkkim.whereisit.R;
 import com.tkkim.whereisit.add_location.data.MyLocation;
@@ -22,9 +28,6 @@ import com.tkkim.whereisit.z_etc.DBHelper;
 import java.io.File;
 import java.util.ArrayList;
 
-/**
- * Created by conscious on 2016-12-06.
- */
 
 public class ChoiceLocation extends AppCompatActivity {
 
@@ -32,7 +35,11 @@ public class ChoiceLocation extends AppCompatActivity {
 
     private TextView tvNoData;
     private RecyclerView recyclerView;
+    private Button btn;
     private ArrayList<MyLocation> items;
+    private ArrayList<MyLocation> arrLocNo;
+    private SparseBooleanArray boolLocNo;
+    private Boolean boolReEnter = false;
 
     public static final String EXTRA_LOC_NO = "locNo";
     private String LocNo;
@@ -46,10 +53,59 @@ public class ChoiceLocation extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.nav_choice_loc);
 
-        tvNoData = (TextView)findViewById(R.id.tvNoData);
+
+        tvNoData = (TextView) findViewById(R.id.tvNoData);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
-        getLoc();
+        items = (ArrayList<MyLocation>)getIntent().getSerializableExtra(AddStuff.PUT_ITEM);
+        boolLocNo = new SparseBooleanArray();
+
+
+        if (getIntent().getBooleanExtra(AddStuff.PUT_CHOICED, false)) {
+            boolReEnter = true;
+            arrLocNo = (ArrayList<MyLocation>) getIntent().getSerializableExtra(AddStuff.PUT_ARR_LOC_NO);
+        }
+
+
+        btn = (Button) findViewById(R.id.btn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if (boolLocNo != null) {
+                    arrLocNo = new ArrayList<MyLocation>();
+                    int i;
+                    for (i = 0; i < boolLocNo.size(); i++) {
+
+                        if (boolLocNo.get(i)) {
+                            MyLocation myLoc = new MyLocation();
+                            myLoc.setLoc_no(items.get(i).getLoc_no());
+                            myLoc.setLoc_name(items.get(i).getLoc_name());
+                            arrLocNo.add(myLoc);
+                        }
+
+
+                        Log.d("mybool", "keyAt : " + boolLocNo.keyAt(i));
+                        Log.d("mybool", String.valueOf(boolLocNo.get(i)));
+//                        Log.d("mybool", items.get(boolLocNo.keyAt(i)).getLoc_no() + " : getlocNo");
+                    }
+                    goBack(arrLocNo);
+                } else {
+                    Toast.makeText(getApplicationContext(), "위치가 선택되지 않았습니다.", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        recyclerView.setAdapter(new MyAdapter(items));
+
+        if (items.isEmpty() || items == null) {
+            tvNoData.setVisibility(View.VISIBLE);
+        } else {
+            tvNoData.setVisibility(View.GONE);
+        }
 
 
     }
@@ -71,21 +127,13 @@ public class ChoiceLocation extends AppCompatActivity {
         if (dbHelper == null) {
             dbHelper = new DBHelper(this, "WhereIsIt", null, 1);
         }
-        items = dbHelper.getLocList(0);
-        recyclerView.setLayoutManager(new GridLayoutManager(this,4));
-        recyclerView.setAdapter(new MyAdapter(items));
+        items = dbHelper.getLocAll();
 
-        if (items.isEmpty()||items==null) {
-            tvNoData.setVisibility(View.VISIBLE);
-        } else {
-            tvNoData.setVisibility(View.GONE);
-        }
     }
 
-    private void goBack(String locNo, String locName) {
+    private void goBack(ArrayList<MyLocation> arrLocNo) {
         Intent intent = new Intent();
-        intent.putExtra(AddStuff.PUT_LOC_NO, locNo);
-        intent.putExtra(AddStuff.PUT_LOC_NAME, locName);
+        intent.putExtra(AddStuff.PUT_ARR_LOC_NO, arrLocNo);
         setResult(AddStuff.RESULT_OK, intent);
         finish();
     }
@@ -94,8 +142,12 @@ public class ChoiceLocation extends AppCompatActivity {
 
         private final ArrayList<MyLocation> items;
 
-        public MyAdapter(ArrayList<MyLocation> items) {
+        MyAdapter(ArrayList<MyLocation> items) {
             this.items = items;
+        }
+
+        public void setCheck(int position) {
+
         }
 
         @Override
@@ -105,7 +157,7 @@ public class ChoiceLocation extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(final ChoiceLocation.MyViewHolder viewHolder, int position) {
+        public void onBindViewHolder(final ChoiceLocation.MyViewHolder viewHolder, final int position) {
 
             if (items.get(position).getLoc_imgpath() != null) {
                 String imgPath = items.get(position).getLoc_imgpath();
@@ -113,14 +165,44 @@ public class ChoiceLocation extends AppCompatActivity {
             }
 
             viewHolder.tvLocName.setText(items.get(position).getLoc_name());
-            viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+
+
+            /*viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    LocNo = items.get(viewHolder.getAdapterPosition()).getLoc_no() + "";
-                    LocName = items.get(viewHolder.getAdapterPosition()).getLoc_name();
-                    goBack(LocNo, LocName);
+                    Toast.makeText(getApplicationContext(),"list "+position,Toast.LENGTH_SHORT).show();
+                }
+            });*/
+
+
+            boolLocNo.append(position, false);
+
+            viewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        Toast.makeText(getApplicationContext(), "checked " + items.get(position).getLoc_no() + "-" + position, Toast.LENGTH_SHORT).show();
+//                    arrLocNo.add(items.get(position).getLoc_no());
+//                        sparseLocNo.append(position,items.get(position).getLoc_no());
+                        boolLocNo.put(position, true);
+
+
+                    } else {
+//                        arrLocNo.remove(items.get(position).getLoc_no());
+//                        sparseLocNo.removeAt(position);
+                        boolLocNo.put(position, false);
+                        Toast.makeText(getApplicationContext(), "Unchecked " + items.get(position).getLoc_no() + "-" + position, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
+
+            if (boolReEnter) {
+                for (MyLocation data : arrLocNo) {
+                    if (data.getLoc_no() == items.get(position).getLoc_no()) {
+                        viewHolder.checkBox.setChecked(true);
+                    }
+                }
+            }
         }
 
         @Override
@@ -134,12 +216,14 @@ public class ChoiceLocation extends AppCompatActivity {
         private ImageView ivLocImg;
         private TextView tvLocName;
         private CardView cardView;
+        private CheckBox checkBox;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
             ivLocImg = (ImageView) itemView.findViewById(R.id.ivLocImg);
             tvLocName = (TextView) itemView.findViewById(R.id.tvLocName);
             cardView = (CardView) itemView.findViewById(R.id.cardview);
+            checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
         }
     }
 }

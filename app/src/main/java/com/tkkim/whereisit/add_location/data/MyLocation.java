@@ -1,10 +1,11 @@
 package com.tkkim.whereisit.add_location.data;
 
-/**
- * Created by conscious on 2016-11-28.
- */
+import java.io.Serializable;
 
-public class MyLocation {
+
+public class MyLocation implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int loc_no;
     private String loc_name;
