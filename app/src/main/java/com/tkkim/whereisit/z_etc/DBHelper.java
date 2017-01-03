@@ -192,7 +192,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Toast.makeText(context, "Stuff Insert 완료", Toast.LENGTH_SHORT).show();
     }
 
-    public ArrayList<Stuff> getStuList(String locNo) {
+    public ArrayList<Stuff> getStuAll(String locNo) {
         SQLiteDatabase db = getReadableDatabase();
 
         String sql = "SELECT * FROM " + TABLE_stuff + " WHERE " + COL_loc_no + " = " + locNo;
@@ -207,6 +207,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 do {
                     Stuff data = new Stuff();
                     data.setLoc_no(c.getString(c.getColumnIndex(COL_loc_no)));
+                    data.setStu_no(c.getInt(c.getColumnIndex(COL_stu_no)));
                     data.setStu_name(c.getString(c.getColumnIndex(COL_stu_name)));
                     data.setStu_comment(c.getString(c.getColumnIndex(COL_stu_comment)));
                     data.setStu_imgpath(c.getString(c.getColumnIndex(COL_stu_imgpath)));
@@ -252,7 +253,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void deleteStuff(String stuNo, String locNo) {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("delete from " + TABLE_stuff + " WHERE " + COL_stu_no + " = " + stuNo + " AND " + COL_loc_no + " = " + locNo);
+        String sqla = "DELETE FROM " + TABLE_stuff + " WHERE " + COL_stu_no + " = " + stuNo + " AND " + COL_loc_no + " = " + locNo;
+        db.execSQL("DELETE FROM " + TABLE_stuff + " WHERE " + COL_stu_no + " = " + stuNo + " AND " + COL_loc_no + " = " + locNo);
         db.close();
         Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
     }

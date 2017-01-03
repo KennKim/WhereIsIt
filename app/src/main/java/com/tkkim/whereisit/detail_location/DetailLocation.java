@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.tkkim.whereisit.R;
 import com.tkkim.whereisit.add_location.AddLocation;
+import com.tkkim.whereisit.add_location.data.MyLocation;
 import com.tkkim.whereisit.add_stuff.AddStuff;
 import com.tkkim.whereisit.add_stuff.data.Stuff;
 import com.tkkim.whereisit.detail_stuff.DetailStuff;
@@ -86,7 +87,7 @@ public class DetailLocation extends AppCompatActivity {
         if (dbHelper == null) {
             dbHelper = new DBHelper(this, dbHelper.DB_NAME, null, 1);
         }
-        stuItems = dbHelper.getStuList(locNo);
+        stuItems = dbHelper.getStuAll(locNo);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new MyAdapter(stuItems));
 
@@ -139,9 +140,15 @@ public class DetailLocation extends AppCompatActivity {
 
 
     private void goToAddStuff() {
-        Intent intent = new Intent(getApplicationContext(), AddStuff.class);
-        intent.putExtra(PUT_LOC_NO, locNo);
-        intent.putExtra(PUT_LOC_NAME, locName);
+        ArrayList<MyLocation> arrLocNo = new ArrayList<>();
+        MyLocation myLoc = new MyLocation();
+        myLoc.setLoc_no(Integer.parseInt(locNo));
+        myLoc.setLoc_name(locName);
+        arrLocNo.add(myLoc);
+
+        Intent intent = new Intent(DetailLocation.this, AddStuff.class);
+        intent.putExtra(AddStuff.PUT_FROM_Detail_Loc, true);
+        intent.putExtra(AddStuff.PUT_ARR_LOC_NO, arrLocNo);
         startActivity(intent);
     }
 
@@ -221,15 +228,15 @@ public class DetailLocation extends AppCompatActivity {
                 public void onClick(View view) {
 //                    Toast.makeText(getApplicationContext(), "carView " + viewHolder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(DetailLocation.this, DetailStuff.class);
-                    intent.putExtra(DetailStuff.PUT_STU_NO, stuItems.get(viewHolder.getAdapterPosition()).getStu_no());
+                    intent.putExtra(DetailStuff.PUT_STU_NO, stuItems.get(viewHolder.getAdapterPosition()).getStu_no()+"");
                     intent.putExtra(DetailStuff.PUT_STU_NAME, stuItems.get(viewHolder.getAdapterPosition()).getStu_name());
                     intent.putExtra(DetailStuff.PUT_STU_COMMENT, stuItems.get(viewHolder.getAdapterPosition()).getStu_comment());
                     intent.putExtra(DetailStuff.PUT_STU_DATE, stuItems.get(viewHolder.getAdapterPosition()).getStu_date());
                     intent.putExtra(DetailStuff.PUT_STU_IMGPATH, stuItems.get(viewHolder.getAdapterPosition()).getStu_imgpath());
                     intent.putExtra(PUT_LOC_NO, locNo);
                     startActivity(intent);
-                    overridePendingTransition(android.R.anim.slide_out_right, android.R.anim.slide_in_left);
-
+//                    overridePendingTransition(android.R.anim.slide_out_right, R.anim.hold);
+                    overridePendingTransition(R.anim.slide_left, R.anim.hold);
                 }
             });
         }

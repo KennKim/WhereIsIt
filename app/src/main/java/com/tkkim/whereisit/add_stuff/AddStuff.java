@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,6 +54,7 @@ public class AddStuff extends AppCompatActivity {
     private ArrayList<MyLocation> arrLocNo;
     public Boolean boolChoiced = false;
     public static final String PUT_ITEM = "locItem";
+    public static final String PUT_FROM_Detail_Loc = "detailLoc";
     public static final String PUT_ARR_LOC_NO = "locNo";
     public static final String PUT_CHOICED = "choiced";
     public static final String PUT_LOC_NAME = "locName";
@@ -63,6 +65,12 @@ public class AddStuff extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_stuff);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        assert getSupportActionBar() != null;
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.nav_add_stuff);
 
@@ -122,9 +130,9 @@ public class AddStuff extends AppCompatActivity {
 
                 if (locName.length() == 0 || locName == " ") {
                     Toast.makeText(getApplicationContext(), "위치를 선택해주세요.", Toast.LENGTH_SHORT).show();
-                } else if (stuName.length() == 0 || stuName == " " ) {
+                } else if (stuName.length() == 0 || stuName == " ") {
                     Toast.makeText(getApplicationContext(), "물건명을 적어주세요.", Toast.LENGTH_SHORT).show();
-                } else if (stuComment.length() == 0 || stuComment == " " ) {
+                } else if (stuComment.length() == 0 || stuComment == " ") {
                     Toast.makeText(getApplicationContext(), "물건설명을 적어주세요.", Toast.LENGTH_SHORT).show();
                 } else if (imgFilePath.length() == 0 || imgFilePath == "" || imgFilePath == null) {
                     Toast.makeText(getApplicationContext(), "사진을 올려주세요.", Toast.LENGTH_SHORT).show();
@@ -158,11 +166,12 @@ public class AddStuff extends AppCompatActivity {
 
         getLocAll();
 
-        /*if (getIntent().getStringExtra(PUT_ARR_LOC_NO) != null) {
-            locNo = getIntent().getStringExtra(PUT_ARR_LOC_NO);
-            locName = getIntent().getStringExtra(PUT_LOC_NAME);
-            tvSelectedLoc.setText(locName);
-        }*/
+        if (getIntent().getBooleanExtra(PUT_FROM_Detail_Loc, false)) {
+            arrLocNo = (ArrayList<MyLocation>) getIntent().getSerializableExtra(PUT_ARR_LOC_NO);
+            signLocName(arrLocNo);
+        }
+
+
     }
 
     @Override
@@ -212,28 +221,20 @@ public class AddStuff extends AppCompatActivity {
                     break;
 
                 case REQUEST_ACT:
-//                    locNo = data.getStringExtra(PUT_ARR_LOC_NO);
-//                    locName = data.getStringExtra(PUT_LOC_NAME);
-
                     arrLocNo = (ArrayList<MyLocation>) data.getSerializableExtra(PUT_ARR_LOC_NO);
-                    if (arrLocNo != null) {
-                        boolChoiced = true;
-
-                        tvSelectedLoc.setText(arrLocNo.get(0).getLoc_name());
-                        if (arrLocNo.size() > 1) {
-                            tvSelectedLoc.setText(arrLocNo.get(0).getLoc_name() + " + " + (arrLocNo.size() - 1));
-                        }
-                    }
-
-                    /*items = (ArrayList<MyLocation>)data.getSerializableExtra(PUT_ARR_LOC_NO);
-                    if (items != null) {
-                        boolChoiced = true;
-                            tvSelectedLoc.setText(items.get(0).getLoc_name());
-                        if (items.size() > 1){
-                            tvSelectedLoc.setText(items.get(0).getLoc_name() + " + " + (items.size()-1));
-                        }
-                    }*/
+                    signLocName(arrLocNo);
                     break;
+            }
+        }
+    }
+
+    private void signLocName(ArrayList<MyLocation> arrLocNo) {
+        if (arrLocNo != null) {
+            boolChoiced = true;
+
+            tvSelectedLoc.setText(arrLocNo.get(0).getLoc_name());
+            if (arrLocNo.size() > 1) {
+                tvSelectedLoc.setText(arrLocNo.get(0).getLoc_name() + " + " + (arrLocNo.size() - 1));
             }
         }
     }
@@ -263,7 +264,6 @@ public class AddStuff extends AppCompatActivity {
         imgFilePath = "";
         ivStuImg.setVisibility(View.GONE);
     }
-
 
 
     // 저장할 폴더 생성
