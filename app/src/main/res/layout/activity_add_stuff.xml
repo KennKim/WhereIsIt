@@ -1,10 +1,19 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.tkkim.whereisit.add_stuff.AddStuff">
 
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -18,12 +27,12 @@
 
             <ImageView
                 android:id="@+id/ivStuImg"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/margin_basic"
-                android:fitsSystemWindows="true"
-                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:visibility="gone"
                 app:srcCompat="@drawable/ic_android_black_24dp" />
 
             <Button
@@ -38,13 +47,13 @@
                 android:orientation="horizontal">
 
 
-
                 <Button
                     android:id="@+id/btnChoice"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/btn_choice_loc" />
+
                 <TextView
                     android:id="@+id/tvSelectedLoc"
                     android:layout_width="match_parent"
@@ -58,7 +67,9 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
 
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/etStuName"
@@ -99,4 +110,4 @@
         </LinearLayout>
     </ScrollView>
 
-</FrameLayout>
+</LinearLayout>
