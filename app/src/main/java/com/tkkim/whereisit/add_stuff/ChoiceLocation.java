@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -50,6 +51,12 @@ public class ChoiceLocation extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice_location);
+
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.nav_choice_loc);
 
@@ -167,12 +174,17 @@ public class ChoiceLocation extends AppCompatActivity {
             viewHolder.tvLocName.setText(items.get(position).getLoc_name());
 
 
-            /*viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+            viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(getApplicationContext(),"list "+position,Toast.LENGTH_SHORT).show();
+                    if(viewHolder.checkBox.isChecked()){
+                        viewHolder.checkBox.setChecked(false);
+                    }else{
+                        viewHolder.checkBox.setChecked(true);
+                    }
                 }
-            });*/
+            });
 
 
             boolLocNo.append(position, false);

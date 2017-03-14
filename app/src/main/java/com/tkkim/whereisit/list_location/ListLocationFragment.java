@@ -93,6 +93,8 @@ public class ListLocationFragment extends Fragment{
 //                android.R.color.holo_green_light,
 //                android.R.color.holo_orange_light,
 //                android.R.color.holo_red_light);
+
+
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
